@@ -18,4 +18,15 @@ const initDb=async()=>{
         
         )
         `)
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS vehicles(
+        id SERIAL PRIMARY KEY,
+        vehicle_name VARCHAR(100) NOT NULL,
+        type VARCHAR(10) NOT NULL,
+        registration_number VARCHAR(50) UNIQUE NOT NULL,
+        daily_rent_price NUMERIC(10,2) NOT NULL,
+        availability_status BOOLEAN DEFAULT TRUE
+        )
+        `)
 }
