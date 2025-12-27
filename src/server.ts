@@ -17,6 +17,8 @@ app.use('/api/v1/users',userRoutes);
 
 app.use('/api/v1/vehicles',vehicleRoutes)
 
+app.use('/api/v1/bookings',bookingRoutes);
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

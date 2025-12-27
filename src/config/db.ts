@@ -29,4 +29,16 @@ const initDb=async()=>{
         availability_status BOOLEAN DEFAULT TRUE
         )
         `)
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS bookings(
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES users(id),
+        vehicle_id INTEGER REFERENCES vehicles(id),
+        rent_start_date DATE NOT NULL DEFAULT NOW(),
+        rent_end_date DATE NOT NULL,
+        total_price NUMERIC(10,2) NOT NULL,
+        status VARCHAR(50) NOT NULL
+        )
+        `)
 }
