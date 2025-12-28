@@ -6,12 +6,15 @@ import config from "../../config";
 
 const signupUser=async(payload: Record<string,unknown>)=>{
     const {name,email,password,phone,role}=payload;
+    if((password as string).length <6){
+        throw new Error('Password must be at least 6 characters long');
+    }
     const hashedPassword= await bycript.hash(password as string,10);
     const result= await pool.query(`
         INSERT INTO users (name,email,password,phone,role)
         VALUES ($1,$2,$3,$4,$5) RETURNING *
     `,[name,email,hashedPassword,phone,role]);
-
+    delete result.rows[0].password;
     return result;
 }
 
@@ -25,7 +28,7 @@ const loginUser=async(email:string,password:string  )=>{
         throw new Error('User not found');
     }
 
-    const matchPassword= bycript.compare(password,user.rows[0].password as string);
+    const matchPassword= await bycript.compare(password,user.rows[0].password as string);
     if(!matchPassword){
         throw new Error('Invalid password');
     }
@@ -39,9 +42,9 @@ const loginUser=async(email:string,password:string  )=>{
 
     const token= jwt.sign(jwtPayload,config.secretKey as string,
         {
-        expiresIn:'7h'
+        expiresIn:'7d'
     });
-
+    delete user.rows[0].password;
     return {token,user:user.rows[0]};
 
 }

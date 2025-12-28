@@ -7,13 +7,14 @@ const getAllUsers=async (req:Request,res:Response)=>{
         const result= await userService.getAllUsers();
         return res.status(200).json({
             success:true,
-            message:'Users fetched successfully',
+            message:"Users retrieved successfully",
             data:result.rows
         });
-    }catch(error){
+    }catch(error:any){
         return res.status(500).json({
             success:false,
-            message:'failed to fetch users'
+            message:'failed to fetch users',
+            error: error.message
         })
     }
 
@@ -26,13 +27,14 @@ const updateUser=async (req:Request,res:Response)=>{
         const result= await userService.updateUser(id as string,payload);
         return res.status(200).json({
             success:true,
-            message:'User updated successfully',
+            message:"User updated successfully",
             data:result.rows[0]
         });
-    }catch(error){
+    }catch(error:any){
         return res.status(500).json({
             success:false,
-            message:'failed to update user'
+            message:'failed to update user',
+            error: error.message
         })
     }
 }
@@ -43,13 +45,13 @@ const deleteUser=async (req:Request,res:Response)=>{
         const result= await userService.deleteUser(id as string);
         return res.status(200).json({
             success:true,
-            message:'User deleted successfully',
-            data:result.rows[0]
+            message:'User deleted successfully'
         });
-    }catch(error){
+    }catch(error:any){
         return res.status(500).json({
             success:false,
-            message:'failed to delete user'
+            message:'failed to delete user',
+            error: error.message
         })
     }   
 }

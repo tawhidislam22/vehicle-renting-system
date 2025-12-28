@@ -5,15 +5,17 @@ import { authService } from "./auth.service";
 const signupUser=async(req:Request,res:Response)=>{
     try{
         const result= await authService.signupUser(req.body);
+
         return res.status(201).json({
             success:true,
-            message:'User signed up successfully',
-            data:result
+            message:"User registered successfully",
+            data:result.rows[0]
         });
-    }catch(error){
+    }catch(error :any){
         return res.status(500).json({
             success:false,
-            message:'failed to signup user'
+            message:'failed to signup user',
+            error: error.message
         })
     }
 }
@@ -23,13 +25,15 @@ const loginUser=async(req:Request,res:Response)=>{
         const result= await authService.loginUser(req.body.email as string, req.body.password as string);
         return res.status(200).json({
             success:true,
-            message:'User logged in successfully',
-            data:result
+            message:"Login successful",
+            data:result 
         });
-    }catch(error){
+    }catch(error:any){
+        console.error('Login error:', error.message);
         return res.status(500).json({
             success:false,
-            message:'failed to login user'
+            message:'failed to login user',
+            error: error.message
         })
     }
     

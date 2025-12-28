@@ -4,12 +4,20 @@ import { authRoutes } from './modules/auth/auth.routes'
 import { userRoutes } from './modules/user/user.routes'
 import { bookingRoutes } from './modules/booking/booking.routes'
 import { vehicleRoutes } from './modules/vehicle/vehicle.routes'
+import initDb from './config/db'
 const app = express()
+app.use(express.json());
+
 const port = config.port
+
 
 app.get('/', (req:Request, res:Response) => {
   res.send('Hello World!')
 })
+
+//database initialization
+
+initDb();
 
 app.use('/api/v1/auth',authRoutes)
 
