@@ -29,7 +29,6 @@ const loginUser=async(req:Request,res:Response)=>{
             data:result 
         });
     }catch(error:any){
-        console.error('Login error:', error.message);
         return res.status(500).json({
             success:false,
             message:'failed to login user',

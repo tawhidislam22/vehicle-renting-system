@@ -25,7 +25,22 @@ const getVehicleById=async(vehicleId:string)=>{
 }
 
 const updateVehicle= async(vehicleId:string,payload: Record<string,unknown>)=>{
-    const {vehicle_name,type,registration_number,daily_rent_price,availability_status}=payload;
+    
+    const currentVehicle = await pool.query(`
+        SELECT * FROM vehicles WHERE id=$1
+    `,[vehicleId]);
+    
+    if(currentVehicle.rows.length === 0){
+        throw new Error('Vehicle not found');
+    }
+    
+    
+    const vehicle_name = payload.vehicle_name ?? currentVehicle.rows[0].vehicle_name;
+    const type = payload.type ?? currentVehicle.rows[0].type;
+    const registration_number = payload.registration_number ?? currentVehicle.rows[0].registration_number;
+    const daily_rent_price = payload.daily_rent_price ?? currentVehicle.rows[0].daily_rent_price;
+    const availability_status = payload.availability_status ?? currentVehicle.rows[0].availability_status;
+    
     const result= await pool.query(`
         UPDATE vehicles SET vehicle_name=$1,type=$2,registration_number=$3,daily_rent_price=$4,availability_status=$5
         WHERE id=$6 RETURNING *
@@ -34,6 +49,23 @@ const updateVehicle= async(vehicleId:string,payload: Record<string,unknown>)=>{
 }
 
 const deleteVehicle= async(vehicleId:string)=>{
+    
+    const vehicle = await pool.query(`
+        SELECT * FROM vehicles WHERE id=$1
+    `,[vehicleId]);
+    
+    if(vehicle.rows.length === 0){
+        throw new Error('Vehicle not found');
+    }
+    
+    const activeBookings = await pool.query(`
+        SELECT * FROM bookings WHERE vehicle_id=$1 AND status='active'
+    `,[vehicleId]);
+    
+    if(activeBookings.rows.length > 0){
+        throw new Error('Cannot delete vehicle with active bookings');
+    }
+    
     const result= await pool.query(`
         DELETE FROM vehicles WHERE id=$1 RETURNING *
     `,[vehicleId]);

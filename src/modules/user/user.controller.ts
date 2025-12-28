@@ -8,7 +8,7 @@ const getAllUsers=async (req:Request,res:Response)=>{
         return res.status(200).json({
             success:true,
             message:"Users retrieved successfully",
-            data:result.rows
+            data:result
         });
     }catch(error:any){
         return res.status(500).json({
@@ -22,9 +22,10 @@ const getAllUsers=async (req:Request,res:Response)=>{
 
 const updateUser=async (req:Request,res:Response)=>{
     try{
-        const id=req.params.id;
+        const id=req.params.userId;
+        const token=req.headers.authorization;
         const payload=req.body;
-        const result= await userService.updateUser(id as string,payload);
+        const result= await userService.updateUser(id as string,token as string,payload);
         return res.status(200).json({
             success:true,
             message:"User updated successfully",
@@ -41,7 +42,7 @@ const updateUser=async (req:Request,res:Response)=>{
 
 const deleteUser=async (req:Request,res:Response)=>{
     try{
-        const id=req.params.id;
+        const id=req.params.userId;
         const result= await userService.deleteUser(id as string);
         return res.status(200).json({
             success:true,
