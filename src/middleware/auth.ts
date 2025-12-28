@@ -6,35 +6,47 @@ import { pool } from "../config/db";
 
 const auth=(...roles:('admin'|'customer')[])=>{
     return async(req:Request,res:Response,next:NextFunction)=>{
-        const token=req.headers.authorization
-        if(!token){
+        const authHeader = req.headers.authorization;
+        
+        if(!authHeader || !authHeader.startsWith('Bearer ')){
             return res.status(401).json({
                 success:false,
-                message:'Unauthorized'
+                message:'Unauthorized: No token provided'
             });
         }
-        const decoded=jwt.verify(token,config.secretKey as string) as JwtPayload;
 
-        const user= await pool.query(`
-            SELECT * FROM users WHERE email=$1
-        `,[decoded.email]);
+        // Extract token by removing "Bearer " prefix
+        const token = authHeader.substring(7);
 
-        if(user.rows.length===0){
+        try {
+            const decoded=jwt.verify(token,config.secretKey as string) as JwtPayload;
+
+            const user= await pool.query(`
+                SELECT * FROM users WHERE email=$1
+            `,[decoded.email]);
+
+            if(user.rows.length===0){
+                return res.status(401).json({
+                    success:false,
+                    message:'Unauthorized: User not found'
+                });
+            }
+            req.user=decoded;
+
+            if(roles.length && !roles.includes(user.rows[0].role)){
+                return res.status(403).json({
+                    success:false,
+                    message:'Forbidden: Insufficient permissions'
+                });
+            }
+
+            next();
+        } catch (error) {
             return res.status(401).json({
                 success:false,
-                message:'Unauthorized'
+                message:'Unauthorized: Invalid token'
             });
         }
-        req.user=decoded;
-
-        if(roles.length && !roles.includes(user.rows[0].role)){
-            return res.status(403).json({
-                success:false,
-                message:'Forbidden'
-            });
-        }
-
-        next();
     }
 }
 

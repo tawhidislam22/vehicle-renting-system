@@ -23,7 +23,8 @@ const getAllUsers=async (req:Request,res:Response)=>{
 const updateUser=async (req:Request,res:Response)=>{
     try{
         const id=req.params.userId;
-        const token=req.headers.authorization;
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.substring(7); 
         const payload=req.body;
         const result= await userService.updateUser(id as string,token as string,payload);
         return res.status(200).json({

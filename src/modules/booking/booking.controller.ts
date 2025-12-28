@@ -21,7 +21,8 @@ const addNewBooking= async (req:Request, res:Response) => {
 
 const getBooking= async (req:Request, res:Response) => {
     try {
-        const token=req.headers.authorization;
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.substring(7); 
         
         const result = await bookingService.getBooking(token as string);
         res.status(200).json({
@@ -40,8 +41,8 @@ const updateBooking= async (req:Request, res:Response) => {
     try {
         const id=req.params.bookingId; 
         const status=req.body?.status;
-        const token=req.headers.authorization;
-        
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.substring(7); 
         
         const result = await bookingService.updateBooking(id as string,status as string,token as string);
         res.status(200).json({
