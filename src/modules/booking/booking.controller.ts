@@ -5,13 +5,17 @@ import { bookingService } from "./booking.service";
 const addNewBooking= async (req:Request, res:Response) => {
     try {
         const payload = req.body;
-        const result = await bookingService.addNewBooking(payload);
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.substring(7);
+        const result = await bookingService.addNewBooking(token as string, payload);
         res.status(201).json({
+            success:true,
             message: "Bookings retrieved successfully",
             data: result.rows[0]
         });
     } catch (error:any) {
         res.status(500).json({
+            success:false,
             message: 'Internal server error',
             error: error.message
         });
@@ -26,11 +30,13 @@ const getBooking= async (req:Request, res:Response) => {
         
         const result = await bookingService.getBooking(token as string);
         res.status(200).json({
+            success:true,
             message: 'Bookings retrieved successfully',
             data: result
         });
     } catch (error:any) {
         res.status(500).json({
+            success:false,
             message: 'Internal server error',
             error: error.message
         });

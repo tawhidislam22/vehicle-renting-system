@@ -11,6 +11,7 @@ const addNewVehicle=async(payload:Record<string,unknown>)=>{
 }
 
 const getAllVehicles=async()=>{
+    
     const result= await pool.query(`
         SELECT * FROM vehicles
     `);

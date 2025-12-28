@@ -2,10 +2,13 @@ import jwt,{ JwtPayload } from "jsonwebtoken";
 import { pool } from "../../config/db";
 import config from "../../config";
 
-
-const addNewBooking=async(payload:Record<string,unknown>)=>{
+const addNewBooking=async(token:string,payload:Record<string,unknown>)=>{
     const {customer_id,vehicle_id,rent_start_date,rent_end_date}=payload;
+    const decoded=jwt.verify(token,config.secretKey as string) as JwtPayload;
     
+    if(decoded.role==='customer' && decoded.id != customer_id){
+        throw new Error('Unauthorized: Customers can only create bookings for themselves');
+    }
     const vehicle= await pool.query(`
         SELECT vehicle_name,daily_rent_price,availability_status FROM vehicles WHERE id=$1
     `,[vehicle_id]);
@@ -38,6 +41,7 @@ const addNewBooking=async(payload:Record<string,unknown>)=>{
 }
 
 const getBooking=async(token:string)=>{
+    
     const decoded=jwt.verify(token,config.secretKey as string) as JwtPayload;
     
     

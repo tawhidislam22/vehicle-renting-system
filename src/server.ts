@@ -5,6 +5,8 @@ import { userRoutes } from './modules/user/user.routes'
 import { bookingRoutes } from './modules/booking/booking.routes'
 import { vehicleRoutes } from './modules/vehicle/vehicle.routes'
 import initDb from './config/db'
+import { autoReturnExpiredBookings } from './jobs/autoReturn'
+
 const app = express()
 app.use(express.json());
 
@@ -15,9 +17,11 @@ app.get('/', (req:Request, res:Response) => {
   res.send('Hello World!')
 })
 
-//database initialization
 
 initDb();
+
+
+autoReturnExpiredBookings();
 
 app.use('/api/v1/auth',authRoutes)
 

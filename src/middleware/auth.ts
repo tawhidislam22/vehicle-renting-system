@@ -15,7 +15,6 @@ const auth=(...roles:('admin'|'customer')[])=>{
             });
         }
 
-        // Extract token by removing "Bearer " prefix
         const token = authHeader.substring(7);
 
         try {
